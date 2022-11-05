@@ -1,0 +1,432 @@
+﻿@model  ModelPortal.USERMAST
+@{
+    ViewBag.Title = "Registration";
+    <script src="~/Scripts/Md5/aes.js"></script>
+    <script type="text/javascript">
+        function CheckData() {
+            var txtUserName = $('#LOGINUSERNAME').val();
+            var txtpassword = $('#LOGINUSER_PASSWORD').val();
+
+            if (txtUserName == "") {
+                alert('Please enter UserName');
+                return false;
+            }
+            else if (txtpassword == "") {
+                alert('Please enter Password');
+                return false;
+            }
+            else {
+                var key = CryptoJS.enc.Utf8.parse('8080808080808080');
+                var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
+
+                var encryptedlogin = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(txtUserName), key,
+
+                    { keySize: 128 / 8, iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+
+                $('#LOGINUSERNAME').val(encryptedlogin);
+
+                var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(txtpassword), key,
+
+                    { keySize: 128 / 8, iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+
+                $('#LOGINUSER_PASSWORD').val(encryptedpassword);
+            }
+        }
+    </script>
+}
+
+<script>
+    function DisplaySuccessMsg(aaData) {
+        if (parseInt(aaData.errorID) <= 0) {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 4000
+                };
+                toastr.error(aaData.errorMsg, 'Error');
+
+            }, 300);
+        }
+        else {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 4000
+                };
+                toastr.success(aaData.errorMsg, 'Success');
+
+            }, 300);
+            if (aaData.flag == "OTP") {
+
+            }
+            if (aaData.flag == "LOGIN") {
+                window.location.href = aaData.REDIRECTURL;
+            }
+            else {
+                Closetransaction();
+            }
+
+        }
+    }
+    function Closetransaction() {
+
+        window.location.reload();
+    }
+    $(document).ready(function () {
+        $("#FORMUSERMAST").validate({
+            rules: {
+                MOBILE_NUMBER: {
+                    required: true,
+                    remote: {
+                        url: "/UserMast/CHECKIFDATAEXIST",
+                        type: "post",
+                        data: {
+                            MOBILE_NUMBER: function () {
+                                return $("#MOBILE_NUMBER").val();
+                            },
+                            USERNAME: function () {
+                                return $("#USERNAME").val();
+                            },
+                            REGISTRATION_ID: function () {
+                                return $("#REGISTRATION_ID").val();
+                            }
+
+                        }
+                    }
+                },
+                USERNAME: {
+                    required: true,
+                    remote: {
+                        url: "/UserMast/CheckUserNameExists",
+                        type: "post",
+                        data: {
+                            USERNAME: function () {
+                                return $("#USERNAME").val();
+                            },
+                            REGISTRATION_ID: function () {
+                                return $("#REGISTRATION_ID").val();
+                            }
+
+                        }
+                    }
+                },
+                USER_PASSWORD: 'required',
+                EMAIL_ADDRESS: 'required',
+            },
+            messages: {
+                MOBILE_NUMBER: {
+                    required: "Please Enter Mobile Number",
+                    remote: "Mobile Number already exist."
+                },
+                USERNAME: {
+                    required: 'Please Enter User Name',
+                    remote: "UserName Already Taken"
+                },
+
+                USER_PASSWORD: 'Please Enter Password',
+                EMAIL_ADDRESS: 'Please Enter Email',
+            },
+            errorPlacement: function (error, element) {
+                var placement = $(element).data('error');
+                if (placement) {
+                    $(placement).append(error)
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+    });
+</script>
+
+<div class="about_banner">
+    <div>
+        <h2>Login/Register</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active" aria-current="page">Home</li>
+                <li class="breadcrumb-item"><a href="#">Register</a></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<section class="welcomeSection">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <h1>Login</h1>
+                @using (Ajax.BeginForm("LOGINUSERMAST", "Account", new AjaxOptions() { OnSuccess = "DisplaySuccessMsg" }, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.hdrandomseed)
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                </div>
+                                <div class="ibox-content">
+                                    <div class="form-group row">
+                                        <input type="text" id="REGISTRATION_ID" value="@Model.REGISTRATION_ID" name="ENGINETYPEID" hidden />
+
+                                        <label class="col-sm-3 col-form-label">User Name</label>
+                                        <div>
+                                            @Html.TextBoxFor(m => m.USERNAME, new { @autocomplete = "new-password", @style = "width:100%!important", @class = "form-control keyupfunc", @id = "LOGINUSERNAME", @Placeholder = "Enter User Name" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Password</label>
+                                        <div>
+                                            @Html.PasswordFor(m => m.USER_PASSWORD, new { @style = "width:100%!important", @class = "form-control keyupfunc", @id = "LOGINUSER_PASSWORD", @Placeholder = "Enter User Password" })
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="">
+                                            <button onclick="CheckData();" class="btn btn-primary btn-w-m align-right mr-2 btn-sm" id="btnSubmit" type="submit" name="submit" value="Save"><i class="fa fa-check"></i>Login</button>
+                                            <button class="btn btn-warning btn-w-m align-right btn-sm" type="reset" onclick="location.reload();">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card-text-holder">
+                    <h1>Register</h1>
+                    @using (Ajax.BeginForm("ADDUSERMAST", "Account", new AjaxOptions() { OnSuccess = "DisplaySuccessMsg" }, new { @enctype = "multipart/form-data", @id = "FORMUSERMAST", @class = "form-horizontal" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="form-group row">
+                                            <input type="text" id="REGISTRATION_ID" value="@Model.REGISTRATION_ID" name="ENGINETYPEID" hidden />
+
+                                            <label class="col-sm-3 col-form-label">User Name</label>
+                                            <div>
+                                                @Html.TextBoxFor(m => m.USERNAME, new { @autocomplete = "new-password", @style = "width:100%!important", @class = "form-control keyupfunc", @id = "USERNAME", @Placeholder = "Enter User Name", @maxlength = "20" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Password</label>
+                                            <div>
+                                                @Html.PasswordFor(m => m.USER_PASSWORD, new { @style = "width:100%!important", @class = "form-control keyupfunc", @id = "USER_PASSWORD", @Placeholder = "Enter User Password", @maxlength = "20" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Mobile Number</label>
+                                            <div>
+                                                @Html.TextBoxFor(m => m.MOBILE_NUMBER, new { @style = "width:100%!important", @class = "form-control keyupfunc", @id = "MOBILE_NUMBER", @Placeholder = "Enter Mobile Number", @maxlength = "20" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Email Address</label>
+                                            <div>
+                                                @Html.TextBoxFor(m => m.EMAIL_ADDRESS, new { @style = "width:100%!important", @class = "form-control keyupfunc", @id = "EMAIL_ADDRESS", @Placeholder = "Enter Email Address", @maxlength = "50" })
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3 col-sm-offset-2 d-flex">
+                                                <input type="submit" class=" btn btn-primary otp-btn bhandhansendbtn btn-sm" name="submit" id="OTPLink" value="Send OTP" />
+                                                <p id="validateOTP" style="color: red;"></p>
+
+                                                <p id="errorOTP" style="color: red; margin-left:15px; margin-bottom:20px;">
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row otpfield">
+                                            <label class="col-sm-3 col-form-label">Mobile OTP</label>
+                                            <div>
+                                                @Html.TextBoxFor(m => m.MOBILEOTP, new { @style = "width:100%!important", @class = "form-control", @id = "MOBILEOTP", @Placeholder = "Enter Mobile OTP", @maxlength = "50" })
+                                            </div>
+                                        </div>
+                                        <div class="row otpfield">
+                                            <div class="">
+                                                <button class="btn btn-primary btn-w-m align-right mr-2 btn-sm" id="btnSubmit" type="submit" name="submit" value="Save"><i class="fa fa-check"></i>Save</button>
+                                                <button class="btn btn-warning btn-w-m align-right btn-sm" type="reset" onclick="location.reload();">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    $(".otpfield").hide();
+    $("#OTPLink").prop("disabled", true);
+
+    var OTP = '';
+    var IsExpired = false;
+    var OTPSent = false;
+    $('#OTPLink').click(function () {
+        var USERNAME = $('#USERNAME').val().trim();
+        var MOBILE_NUMBER = $('#MOBILE_NUMBER').val();
+        var EMAIL_ADDRESS = $('#EMAIL_ADDRESS').val();
+
+        IsExpired = false;
+        if (MOBILE_NUMBER != "") {
+            $.ajax({
+                url: "/UserMast/SendOTP?MOBILE_NUMBER=" + MOBILE_NUMBER + "&USERNAME=" + USERNAME + "&EMAIL_ADDRESS=" + EMAIL_ADDRESS,
+                type: "Get",
+                beforeSend: function () {
+
+                    $('#errorOTP').html('<img src="/Content/assets/Images/ajax-loader.gif" alt="Alt Tag" style="width:25px;height:25px;">');
+                },
+                success: function (data) {
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 4000
+                        };
+                        toastr.success("OTP has been sent on your mobile/email address.", 'Success');
+
+                    }, 300);
+
+                    $('#errorOTP').html('');
+                    OTP = data;
+                    OTPSent = true;
+                    $('#MOBILEOTP').val('');
+                    $('#validateOTP').html('');
+                    $("#OTPLink").prop("disabled", true);
+                    $('#USERNAME').attr("readonly", true);
+                    $('#USER_PASSWORD').attr("readonly", true);
+                    $('#MOBILE_NUMBER').attr("readonly", true);
+                    $('#EMAIL_ADDRESS').attr("readonly", true);
+
+                    $(".otpfield").show();
+                    $("#MOBILEOTP").focus();
+
+                }
+            });
+        }
+        else {
+            $('#errorOTP').html('Please enter mobile no');
+            $('#validateOTP').html('');
+            $('#MobileNo').focus();
+            return false;
+        }
+    });
+    $(".keyupfunc").keyup(function () {
+        if ($("#USERNAME").val() == ""
+            || $("#USER_PASSWORD").val() == "" ||
+            $("#MOBILE_NUMBER").val() == "" ||
+            $("#EMAIL_ADDRESS").val() == "" ||
+            $("#USERNAME-error").text() != "" ||
+            $("#MOBILE_NUMBER-error").text() != "") {
+            $("#OTPLink").prop("disabled", true);
+        }
+        else {
+            $("#OTPLink").prop("disabled", false);
+        }
+    });
+    $('#MOBILEOTP').keyup(function () {
+        var length = $("#MOBILEOTP").val().length;
+        var txtOTP = $('#MOBILEOTP').val();
+        $("#btnSubmit").prop("disabled", false);
+        if (txtOTP == "") {
+            $('#hideFields').hide();
+            $('#modelOTP').html('');
+            $('#validateOTP').html('Please enter OTP');
+            $('#errorOTP').html('');
+            $("#btnSubmit").prop("disabled", true);
+            return false;
+        }
+
+        if (txtOTP != "") {
+            if (length == 6) {
+                $.ajax({
+                    url: "/UserMast/VerifyOTP?OTP=" + txtOTP,
+                    type: "POST",
+                    success: function (data) {
+                        if (data == "OTPExpired") {
+                            IsExpired = true;
+                            $('#errorOTP').html('OTP has been expired. Please Resend OTP.');
+
+                            setTimeout(function () {
+                                toastr.options = {
+                                    closeButton: true,
+                                    progressBar: true,
+                                    showMethod: 'slideDown',
+                                    timeOut: 4000
+                                };
+                                toastr.error('OTP has been expired. Please Resend OTP.', 'Error');
+
+                            }, 300);
+                            $('#validateOTP').html('');
+                            $('#OTPLink').val('Resend OTP');
+                            $("#OTPLink").prop("disabled", false);
+                            $("#btnSubmit").prop("disabled", true);
+                            $(".otpfield").hide();
+                            return false;
+                        }
+
+                        if (data == "Verified") {
+                            $('#hideFields').show();
+                            $('#validateOTP').html('');
+                            $('#errorOTP').html('');
+                        }
+                        if (data == "Invalid") {
+                            $('#hideFields').hide();
+
+
+                            setTimeout(function () {
+                                toastr.options = {
+                                    closeButton: true,
+                                    progressBar: true,
+                                    showMethod: 'slideDown',
+                                    timeOut: 4000
+                                };
+                                toastr.error("Invalid OTP", 'Error');
+
+                            }, 300);
+
+                            $('#validateOTP').html('Invalid OTP');
+                            $('#errorOTP').html('');
+                            $("#btnSubmit").prop("disabled", true);
+                            return false;
+                        }
+
+                    }
+                });
+            }
+            else {
+                $('#hideFields').hide();
+                $('#modelOTP').html('');
+                $('#validateOTP').html('');
+                $('#errorOTP').html('');
+                $("#btnSubmit").prop("disabled", true);
+                return false;
+            }
+
+
+        }
+        else {
+            $('#hideFields').hide();
+            $('#modelOTP').html('');
+            $('#validateOTP').html('Please enter OTP');
+            $('#errorOTP').html('');
+            $("#btnSubmit").prop("disabled", true);
+            return false;
+        }
+    });
+</script>
+

@@ -1,0 +1,309 @@
+﻿@model Vzah.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = null;
+}
+<style>
+    .field-validation-error{color:red;}
+</style>
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Register</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="~/Areas/Content/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Areas/Content/bower_components/font-awesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="~/Areas/Content/bower_components/Ionicons/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/Areas/Content/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="~/Areas/Content/dist/css/style.css">
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<body class="hold-transition login-page">
+    <div class="login-bg">
+        <div class="container login-wrapper p-0">
+            <div class="row">
+                <div class="col-lg-7 col-md-7 col-sm-12">
+                    <div class="login-logo">
+                        <a href="/Home/Index">
+                            <img src="~/Areas/Content/dist/img/logo.png">
+                        </a>
+                    </div>
+                    <!-- /.login-logo -->
+                    <div style="height: 525px;display: flex;">
+                        <div class="form-container">
+                            <div class="login-box-body">
+                                <h1>Register Here</h1>
+                                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <hr />
+                                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                                    <div class="form-group has-feedback">
+
+                                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "User Name" })
+                                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                                        <span style="color:red;">@Html.ValidationMessageFor(m => m.UserName)</span>
+
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email Address" })
+                                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                                        <span style="color:red;">@Html.ValidationMessageFor(m => m.Email)</span>
+
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
+                                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                        <span style="color:red;">@Html.ValidationMessageFor(m => m.Password)</span>
+
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm Password" })
+                                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                        <span style="color:red;">@Html.ValidationMessageFor(m => m.ConfirmPassword)</span>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control keyupfunc", @placeholder = "Mobile Number" })
+                                        <span class="glyphicon glyphicon-Phone form-control-feedback"></span>
+                                        <span style="color:red;">@Html.ValidationMessageFor(m => m.Mobile)</span>
+                                    </div>
+                                   
+                                    <div class="form-group has-feedback">
+                                        @Html.TextBoxFor(m => m.OTP, new { @class = "form-control", @placeholder = "OTP" })
+                                        <span class="glyphicon glyphicon-send form-control-feedback"></span>
+                                        <span style="color:red;">@Html.ValidationMessageFor(m => m.OTP)</span>
+                                    </div>
+                                    <div class="row">
+                                        <p id="validateOTP" style="color: red;"></p>
+                                        <p id="errorOTP" style="color: red; margin-left:15px; margin-bottom:20px;">
+                                            <div class="col-xs-12 text-center">
+                                                <button type="button" class="btn-primary-org otp-btn bhandhansendbtn" name="submit" id="OTPLink" value="Send OTP">Send OTP</button>
+                                                <button type="submit" id="btnSubmit" class="btn-primary-org">Sign Up</button>
+                                            </div>
+                                            <!-- /.col -->
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.login-box-body -->
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-0">
+                    <div class="login-bg-img">
+                        <div class="bg-content">
+                            <div>
+                                <h1>Lorem Ipsum</h1>
+                                <p>
+                                    Signup and discover
+                                    a new places to visit.
+                                </p>
+                                <div class="link">
+                                    <p>Already have an account ? <a href="/Account/Login">LogIn</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.login-box -->
+    <!-- jQuery 3 -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/plugins/toastr")
+    <!-- Bootstrap 3.3.7 -->
+    <script src="~/Areas/Content/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="~/Areas/Content/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' /* optional */
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+<script>
+    $('#Mobile').keypress(function (e) {
+        var charCode = (e.which) ? e.which : event.keyCode
+        if (String.fromCharCode(charCode).match(/[^0-9]/g))
+            return false;
+    });
+    $('#UserName').keypress(function (e) {
+        if (e.which === 32)
+            return false;
+    });
+    $("#btnSubmit").prop("disabled", true);
+    $(".otpfield").hide();
+    $("#OTPLink").prop("disabled", true);
+
+    var OTP = '';
+    var IsExpired = false;
+    var OTPSent = false;
+    $('#OTPLink').click(function () {
+        var USERNAME = $('#UserName').val().trim();
+        var MOBILE_NUMBER = $('#Mobile').val();
+        var EMAIL_ADDRESS = $('#Email').val();
+
+        IsExpired = false;
+        if (MOBILE_NUMBER != "") {
+            $.ajax({
+                url: "/UserMast/SendOTP?MOBILE_NUMBER=" + MOBILE_NUMBER + "&USERNAME=" + USERNAME + "&EMAIL_ADDRESS=" + EMAIL_ADDRESS,
+                type: "Get",
+                beforeSend: function () {
+
+                    $('#errorOTP').html('<img src="/Content/assets/Images/ajax-loader.gif" alt="Alt Tag" style="width:25px;height:25px;">');
+                },
+                success: function (data) {
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 4000
+                        };
+                        toastr.success("OTP has been sent on your mobile/email address.", 'Success');
+
+                    }, 300);
+
+                    $('#errorOTP').html('');
+                    OTP = data;
+                    OTPSent = true;
+                    $('#OTP').val('');
+                    $('#validateOTP').html('');
+                    $("#OTPLink").prop("disabled", true);
+                    $('#UserName').attr("readonly", true);
+                    $('#Password').attr("readonly", true);
+                    $('#Mobile').attr("readonly", true);
+                    $('#Email').attr("readonly", true);
+
+                    $(".otpfield").show();
+                    $("#OTP").focus();
+
+                }
+            });
+        }
+        else {
+            $('#errorOTP').html('Please enter mobile no');
+            $('#validateOTP').html('');
+            $('#MobileNo').focus();
+            return false;
+        }
+    });
+    $(".keyupfunc").keyup(function () {
+        if ($("#UserName").val() == ""
+            || $("#Password").val() == "" ||
+            $("#Mobile").val() == "" ||
+            $("#Email").val() == "" && $("#Mobile").val().length == 10) {
+            $("#OTPLink").prop("disabled", true);
+        }
+        else {
+            $("#OTPLink").prop("disabled", false);
+        }
+    });
+    $('#OTP').keyup(function () {
+        var length = $("#OTP").val().length;
+        var txtOTP = $('#OTP').val();
+        $("#btnSubmit").prop("disabled", false);
+        if (txtOTP == "") {
+            $('#hideFields').hide();
+            $('#modelOTP').html('');
+            $('#validateOTP').html('Please enter OTP');
+            $('#errorOTP').html('');
+            $("#btnSubmit").prop("disabled", true);
+            return false;
+        }
+
+        if (txtOTP != "") {
+            if (length == 6) {
+                $.ajax({
+                    url: "/UserMast/VerifyOTP?OTP=" + txtOTP,
+                    type: "POST",
+                    success: function (data) {
+                        if (data == "OTPExpired") {
+                            IsExpired = true;
+                            $('#errorOTP').html('OTP has been expired. Please Resend OTP.');
+
+                            setTimeout(function () {
+                                toastr.options = {
+                                    closeButton: true,
+                                    progressBar: true,
+                                    showMethod: 'slideDown',
+                                    timeOut: 4000
+                                };
+                                toastr.error('OTP has been expired. Please Resend OTP.', 'Error');
+
+                            }, 300);
+                            $('#validateOTP').html('');
+                            $('#OTPLink').val('Resend OTP');
+                            $("#OTPLink").prop("disabled", false);
+                            $("#btnSubmit").prop("disabled", true);
+                            $(".otpfield").hide();
+                            return false;
+                        }
+
+                        if (data == "Verified") {
+                            $('#hideFields').show();
+                            $('#validateOTP').html('');
+                            $('#errorOTP').html('');
+                        }
+                        if (data == "Invalid") {
+                            $('#hideFields').hide();
+
+
+                            setTimeout(function () {
+                                toastr.options = {
+                                    closeButton: true,
+                                    progressBar: true,
+                                    showMethod: 'slideDown',
+                                    timeOut: 4000
+                                };
+                                toastr.error("Invalid OTP", 'Error');
+
+                            }, 300);
+
+                            $('#validateOTP').html('Invalid OTP');
+                            $('#errorOTP').html('');
+                            $("#btnSubmit").prop("disabled", true);
+                            return false;
+                        }
+
+                    }
+                });
+            }
+            else {
+                $('#hideFields').hide();
+                $('#modelOTP').html('');
+                $('#validateOTP').html('');
+                $('#errorOTP').html('');
+                $("#btnSubmit").prop("disabled", true);
+                return false;
+            }
+
+
+        }
+        else {
+            $('#hideFields').hide();
+            $('#modelOTP').html('');
+            $('#validateOTP').html('Please enter OTP');
+            $('#errorOTP').html('');
+            $("#btnSubmit").prop("disabled", true);
+            return false;
+        }
+    });
+</script>

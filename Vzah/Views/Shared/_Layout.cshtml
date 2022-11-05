@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="image/png" sizes="16x16" href="/Images/favicon.ico">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Traceability- @ViewBag.Title</title>
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+    <!-- Add jQuery Style direct - used for jQGrid plugin -->
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
+
+    <title>@ViewBag.Title</title>
+    <!-- Primary Inspinia style -->
+    @Styles.Render("~/font-awesome/css")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/plugins/select2Styles")
+    @Styles.Render("~/plugins/dataPickerStyles")
+    @Styles.Render("~/plugins/dataPickerStyles")
+    @Styles.Render("~/plugins/clockpickerStyles")
+    @Styles.Render("~/Content/plugins/dataTables/dataTablesStyles")
+    @Styles.Render("~/plugins/toastrStyles")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/plugins/toastr")
+    @Scripts.Render("~/plugins/select2")
+    <script src="~/Scripts/sweetalert2@10.js"></script>
+    <script src="~/Scripts/jquery.twbsPagination.js"></script>
+    <style>
+        .btn-primary {
+            width: 100px !important;
+        }
+
+        .btn-danger {
+            width: 100px !important;
+        }
+
+        .btn-sm {
+            width: 100px !important;
+        }
+
+        .btn-default {
+            width: 100px !important;
+        }
+
+        .btn-warning {
+            width: 100px !important;
+        }
+
+        .dataTables_paginate {
+            text-align: left !important;
+        }
+
+        .sorting_asc, .sorting_disabled {
+            background: white !important;
+        }
+
+        .blue {
+            color: #478fca !important;
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        .blue {
+            color: #478fca !important;
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+
+
+        #pagination-demo {
+            display: inline-block;
+            margin-bottom: 1.75em;
+        }
+
+            #pagination-demo li {
+                display: inline-block;
+            }
+
+        .page-content {
+            background: #eee;
+            display: inline-block;
+            padding: 10px;
+            width: 100%;
+            max-width: 660px;
+        }
+        /*.active .page-link {
+            background-color: rgb(26, 179, 148);
+            border-color: rgb(26, 179, 148);
+        }*/
+        .pagination > li > a, .pager > li > a {
+            color: #2283c5;
+            background-color: #fafafa;
+            margin: 0 -1px 0 0;
+            border-color: #e0e8eb;
+        }
+
+        .pagination > li.active > a, .pagination > li.active > a:hover {
+            background-color: #6faed9;
+            border-color: #6faed9;
+            color: #fff;
+            text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+        }
+
+        .pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+            z-index: 2;
+            color: #fff;
+            cursor: default;
+            background-color: #428bca;
+            border-color: #428bca;
+        }
+
+        .dataTables_wrapper {
+            padding-bottom: 0px !important;
+        }
+    </style>
+</head>
+<body class="top-navigation pace-done" style="font-size: 12px; font-family: trebuchet ms,sans-serif !important;">
+    <div id="hideshow" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+        <p style="position: absolute; top: 30%; left: 40%; color: White;" id="loadtext">
+
+        </p>
+    </div>
+    <div id="wrapper" class="Index">
+        <div id="page-wrapper" class="gray-bg">
+            @*@Html.Partial("_Navigation")*@
+            @Html.Action("_MainMenu", "CLCom_Admin", new { area = "Masters" })
+            @RenderBody()
+            @Html.Partial("_Footer")
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/plugins/slimScroll")
+    @Scripts.Render("~/bundles/inspinia")
+    @Scripts.Render("~/plugins/dataPicker")
+    @Scripts.Render("~/plugins/dataTables")
+    @Scripts.Render("~/bundles/skinConfig")
+
+    <script>
+
+        function EXPORTTOEXCEL(exportfor) {
+            var url = '/Common/ExportToExcel?For=' + exportfor + "&Flag=Excel";
+            var win = window.open(url, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                alert('Please allow popups for this website');
+            }
+        }
+        function del_cookie(name) {
+            $.ajax({
+                url: '/Account/LogOff',
+                success: function (aaData) {
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                }
+            });
+        }
+        function FNDATATABLEERROR() {
+            $.fn.dataTable.ext.errMode = () => setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 4000
+                };
+                toastr.error('Something Went Wrong...Please contact to database administrator', 'Error');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
+
